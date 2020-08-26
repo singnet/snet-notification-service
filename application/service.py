@@ -71,14 +71,14 @@ class EmailNotificationService:
         message['Subject'] = self.__email.subject
         message['From'] = self.__email.from_address
         message['To'] = ', '.join(self.__email.to_address)
-        if bool(self.__email.__reply_to):
-            message.add_header('reply-to', self.__email.reply_to)
+        if bool(self.__email.reply_to_address):
+            message.add_header('reply-to', self.__email.reply_to_address)
         message_body = MIMEMultipart('alternative')
         htmlpart = MIMEText(self.__email.message_body, 'html', "utf-8")
         message_body.attach(htmlpart)
         message.attach(message_body)
-        if self.filepath:
-            attachment = MIMEApplication(open(self.filepath, 'rb').read())
+        if self.__email.attachment_path:
+            attachment = MIMEApplication(open(self.__email.attachment_path, 'rb').read())
             attachment.add_header('Content-Disposition', 'Report',
                                   filename=os.path.basename(self.__email.attachment_path))
             message.attach(attachment)
