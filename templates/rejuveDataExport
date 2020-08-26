@@ -1,0 +1,8 @@
+<html>
+<head></head>
+<body>
+  <h1>Data Export Ready</h1>
+  <p>Your export is ready</p>
+  <p>Details : {{ details }} </p>
+</body>
+</html>

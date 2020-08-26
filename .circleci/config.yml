@@ -1,0 +1,40 @@
+---
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7.5-node
+    working_directory: ~/singnet
+    steps:
+      - checkout
+      - run:
+          name: Generating checksum for all requirement file
+          command: |
+            shasum */requirement.txt > /tmp/checksum_files_list
+            sudo chown -R circleci:circleci /usr/local/bin
+            sudo chown circleci:circleci -R /usr/local/lib/python3.7
+      - run:
+          name: Revert the permissions
+          command: |
+            sudo chown root:root -R /usr/local/bin
+            sudo chown root:root -R /usr/local/lib/python3.7
+      - run:
+          name: Install dependencies
+          command: |
+            sudo pip install -r requirement.txt
+            npm install package.json
+      - run:
+          name: Install required packages.
+          command: |
+            sudo apt-get update
+            sudo pip install coverage coveralls pytest
+            export PYTHONPATH=$PWD
+      - run:
+          name: Run unit tests and integration test
+          command: |
+            PYTHONPATH=$PWD python -m coverage run -m pytest */testcases/functional_testcases/*.py */testcases/unit_testcases/*.py
+            python -m coverage report -m
+      - save_cache:
+          key: dependency-cache-{{ checksum "/tmp/checksum_files_list" }}
+          paths:
+            - /usr/local/lib/python3.7/site-packages
