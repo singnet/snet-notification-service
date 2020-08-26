@@ -10,7 +10,7 @@ class Email:
         self.__to_address = to_address
         self.__reply_to_address = reply_to_address
         self.__subject = subject
-        self.__message = message_body
+        self.__message_body = message_body
         self.__attachment_path = attachment_path
 
     @property
@@ -34,12 +34,12 @@ class Email:
         self.__subject = subject
 
     @property
-    def message(self):
-        return self.__message
+    def message_body(self):
+        return self.__message_body
 
-    @message.setter
-    def message(self, message):
-        self.__message = message
+    @message_body.setter
+    def message_body(self, message_body):
+        self.__message_body = message_body
 
     @property
     def attachment_path(self):
@@ -60,4 +60,4 @@ class Email:
         except Exception as e:
             logger.info(f"Error in fetching template:: {repr(e)}")
             raise Exception("Template name is not valid.")
-        self.__message = template_name.render(context)
+        self.__message_body = template_name.render(context)
