@@ -1,6 +1,5 @@
 plugins:
   - serverless-python-requirements
-  - serverless-aws-documentation
   - serverless-prune-plugin
 
 service: notification-service
