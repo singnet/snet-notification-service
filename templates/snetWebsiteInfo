@@ -1,0 +1,7 @@
+<html>
+<head></head>
+<body>
+  <h1>Email from a website user</h1>
+  <p>{{ message }}</p>
+</body>
+</html>
