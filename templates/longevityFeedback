@@ -1,0 +1,6 @@
+<html>
+<head></head>
+<body>
+  <p>{{ details }}</p>
+</body>
+</html>

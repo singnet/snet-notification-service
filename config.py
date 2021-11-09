@@ -6,5 +6,9 @@ TEMPLATES = {
     "SNET_WEBSITE_INFO": {
         "TEMPLATE_NAME": "snetWebsiteInfo",
         "SUBJECT": "Inquiry from the website"
+    },
+    "LONGEVITY_FEEDBACK": {
+        "TEMPLATE_NAME": "longevityFeedback",
+        "SUBJECT": "Longevity feedback from user"
     }
 }
