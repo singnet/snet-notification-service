@@ -1,0 +1,7 @@
+<html>
+<head></head>
+<body>
+  <b>General feedback from user: {{ username }}</b>
+  <p>{{ message }}</p>
+</body>
+</html>
