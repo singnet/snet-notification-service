@@ -27,8 +27,6 @@ jobs:
           name: Install required packages.
           command: |
             sudo apt-get update
-            wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
-            unzip sonar-scanner-cli-4.6.2.2472-linux.zip
             sudo pip install coverage coveralls pytest
             export PYTHONPATH=$PWD
       - run:
@@ -36,8 +34,6 @@ jobs:
           command: |
             PYTHONPATH=$PWD python -m coverage run -m pytest */testcases/functional_testcases/*.py */testcases/unit_testcases/*.py
             python -m coverage report -m
-            coverage xml -i
-            sonar-scanner-4.6.2.2472-linux/bin/sonar-scanner -Dsonar.host.url=https://sonarqube.singularitynet.io -Dsonar.login=${SONAR_TOKEN} $SONAR_SCANNER_OPTS_CUSTOM
       - save_cache:
           key: dependency-cache-{{ checksum "/tmp/checksum_files_list" }}
           paths:
