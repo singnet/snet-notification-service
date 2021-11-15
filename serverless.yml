@@ -47,7 +47,6 @@ functions:
   send-notification:
     warmup: true
     handler: application/handler.send_notification
-    path:/send_notification
     role: ${file(./config.${self:provider.stage}.json):ROLE}
     vpc:
       securityGroupIds:
