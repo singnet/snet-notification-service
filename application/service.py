@@ -7,11 +7,8 @@ from domain.email import Email
 from constant import SendEmail
 from config import TEMPLATES
 from common.logger import get_logger
-from common.utils import Utils
 
 logger = get_logger(__name__)
-util = Utils()
-
 
 
 class EmailNotificationService:
@@ -107,10 +104,8 @@ class SMSNotificationService:
 
 
 class SlackNotificationService:
-    def __init__(self, hostname, path):
-        self.hostname = hostname
-        self.path = path
+    def __init__(self):
+        pass
 
-    def send_notification(self, message):
-        util.report_slack(0, message, {"hostname": self.hostname, "path": self.path})
-
+    def send_notification(self):
+        pass
