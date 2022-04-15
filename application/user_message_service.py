@@ -54,6 +54,6 @@ class UserMessageService:
                 EmailNotificationService(email_details).send_notification()
             if action == AllowedActions.SLACK.value:
                 slack_details = RegisteredApplication[source][action]
-                hostname, path = slack_details["hostname"], slack_details["path"]
-                SlackNotificationService(hostname, path).send_notification(message_details.get("message", ""))
+                hostname, path, channel = slack_details["hostname"], slack_details["path"], slack_details["channel"]
+                SlackNotificationService(hostname, path, channel).send_notification(message_details.get("message", ""))
         return

@@ -107,10 +107,11 @@ class SMSNotificationService:
 
 
 class SlackNotificationService:
-    def __init__(self, hostname, path):
+    def __init__(self, hostname, path, channel):
         self.hostname = hostname
         self.path = path
+        self.channel = channel
 
     def send_notification(self, message):
-        util.report_slack(0, message, {"hostname": self.hostname, "path": self.path})
+        util.report_slack(0, message, {"hostname": self.hostname, "path": self.path, "channel": self.channel})
 
