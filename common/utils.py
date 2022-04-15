@@ -4,8 +4,6 @@ import sys
 import traceback
 
 import requests
-import web3
-from web3 import Web3
 
 from common.logger import get_logger
 
@@ -39,10 +37,6 @@ class Utils:
         url = url.replace("http://", "")
         return url
 
-    @staticmethod
-    def get_current_block_no(ws_provider):
-        w3Obj = Web3(web3.providers.WebsocketProvider(ws_provider))
-        return w3Obj.eth.blockNumber
 
 
 def make_response(status_code, body, header=None):
