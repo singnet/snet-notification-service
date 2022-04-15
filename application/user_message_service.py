@@ -51,9 +51,9 @@ class UserMessageService:
                     SendEmail.CONTEXT.value: message_details.get("message", ""),
                 }
                 email_details = email_details.update(RegisteredApplication[source][action])
-                # EmailNotificationService(email_details).send_notification()
+                EmailNotificationService(email_details).send_notification()
             if action == AllowedActions.SLACK.value:
                 slack_details = RegisteredApplication[source][action]
                 hostname, path = slack_details["hostname"], slack_details["path"]
-                # SlackNotificationService(hostname, path).send_notification(message_details.get("message", ""))
+                SlackNotificationService(hostname, path).send_notification(message_details.get("message", ""))
         return
