@@ -7,8 +7,11 @@ from domain.email import Email
 from constant import SendEmail
 from config import TEMPLATES
 from common.logger import get_logger
+from common.utils import Utils
 
 logger = get_logger(__name__)
+util = Utils()
+
 
 
 class EmailNotificationService:
@@ -67,33 +70,26 @@ class EmailNotificationService:
 
     def send_notification(self):
         self.validate_parameters()
-        email = Email(
-            from_address=self.__from_address,
-            to_address=self.__to_address_list,
-            reply_to_address=self.__from_address,
-            subject=self.__subject,
-            message_body=self.__message_body,
-            attachment_path=self.__attachment_path
-        )
         message = MIMEMultipart('mixed')
-        message['Subject'] = email.subject
-        message['From'] = email.from_address
-        message['To'] = ', '.join(email.to_address)
-        if bool(email.__reply_to):
-            message.add_header('reply-to', email.reply_to)
+        message['Subject'] = self.__email.subject
+        message['From'] = self.__email.from_address
+        message['To'] = ', '.join(self.__email.to_address)
+        if bool(self.__email.reply_to_address):
+            message.add_header('reply-to', self.__email.reply_to_address)
         message_body = MIMEMultipart('alternative')
-        htmlpart = MIMEText(email.message, 'html', "utf-8")
+        htmlpart = MIMEText(self.__email.message_body, 'html', "utf-8")
         message_body.attach(htmlpart)
         message.attach(message_body)
-        if self.filepath:
-            attachment = MIMEApplication(open(self.filepath, 'rb').read())
-            attachment.add_header('Content-Disposition', 'Report', filename=os.path.basename(email.attachment_path))
+        if self.__email.attachment_path:
+            attachment = MIMEApplication(open(self.__email.attachment_path, 'rb').read())
+            attachment.add_header('Content-Disposition', 'Report',
+                                  filename=os.path.basename(self.__email.attachment_path))
             message.attach(attachment)
 
         client = boto3.client('ses', region_name=self.__ses_region_name)
         response = client.send_raw_email(
-            Source=email.from_address,
-            Destinations=email.to_address,
+            Source=self.__email.from_address,
+            Destinations=self.__email.to_address,
             RawMessage={
                 'Data': message.as_string(),
             }
@@ -111,8 +107,11 @@ class SMSNotificationService:
 
 
 class SlackNotificationService:
-    def __init__(self):
-        pass
+    def __init__(self, hostname, path, channel):
+        self.hostname = hostname
+        self.path = path
+        self.channel = channel
 
-    def send_notification(self):
-        pass
+    def send_notification(self, message):
+        util.report_slack(0, message, {"hostname": self.hostname, "path": self.path, "channel": self.channel})
+

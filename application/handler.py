@@ -1,6 +1,9 @@
 import json
 from common.logger import get_logger
-from application.service import EmailNotificationService
+from common.utils import generate_lambda_response
+from common.constant import StatusCode
+from application.notification_service import EmailNotificationService
+from application.user_message_service import UserMessageService
 
 logger = get_logger(__name__)
 
@@ -14,3 +17,21 @@ def send_notification(event, context):
         print(repr(e))
         return {"status": "failed"}
     return {"status": response}
+
+
+def process_user_message(event, context):
+    logger.info(f"Send notification event:: {event}")
+    payload = json.loads(event["body"])
+    try:
+        response = UserMessageService().process_messages(payload)
+    except Exception as e:
+        print(repr(e))
+        return generate_lambda_response(
+            StatusCode.OK,
+            {"status": "failed", "data": {}, "error": {"code": 0, "message": "Failed to process user message.", "details": repr(e)}}, cors_enabled=True
+        )
+
+    return generate_lambda_response(
+        StatusCode.OK,
+        {"status": "success", "data": response, "error": {}}, cors_enabled=True
+    )
