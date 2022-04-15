@@ -26,7 +26,10 @@ def process_user_message(event, context):
         response = UserMessageService().process_messages(payload)
     except Exception as e:
         print(repr(e))
-        return {"status": "failed"}
+        return generate_lambda_response(
+            StatusCode.OK,
+            {"status": "failed", "data": {}, "error": {"code": 0, "message": "Failed to process user message.", "details": repr(e)}}, cors_enabled=True
+        )
 
     return generate_lambda_response(
         StatusCode.OK,
