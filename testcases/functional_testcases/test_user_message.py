@@ -11,7 +11,7 @@ class TestProcessUserMessage(TestCase):
         event = {
             "body": json.dumps(
                 {
-                    "source": "PUBLISHER_PORTAL",
+                    "source": "BRIDGE",
                     "name": "TestName",
                     "address": "0x",
                     "email": "test@test.com",
