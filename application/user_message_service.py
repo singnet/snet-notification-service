@@ -60,12 +60,11 @@ class UserMessageService:
         return
 
     @staticmethod
-    def send_emails(email_addresses, payload):
+    def send_emails(email_addresses, email_details):
+        email_details.update({"notification_type": "support"})
         for email_addresss in email_addresses:
-            payload.update({
-                "notification_type": "support",
-                "recipient": email_addresss})
-            payload = {"body": json.dumps(payload)}
+            email_details.update({"recipient": email_addresss})
+            payload = {"body": json.dumps(email_details)}
             boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_ARN, invocation_type="RequestResponse",
                                      payload=json.dumps(payload))
             logger.info(f"Mail sent to {email_addresss}")
