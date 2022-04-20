@@ -32,7 +32,7 @@ jobs:
       - run:
           name: Run unit tests and integration test
           command: |
-            PYTHONPATH=$PWD python -m coverage run -m pytest */testcases/functional_testcases/*.py */testcases/unit_testcases/*.py
+            PYTHONPATH=$PWD python -m coverage run -m pytest testcases/functional_testcases/*.py
             python -m coverage report -m
       - save_cache:
           key: dependency-cache-{{ checksum "/tmp/checksum_files_list" }}

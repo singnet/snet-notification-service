@@ -28,12 +28,16 @@ class AllowedActions(Enum):
 RegisteredApplication = {
     "PUBLISHER_PORTAL": {
         AllowedActions.EMAIL.value: {
-            "email-addresses": [],
+            "email-addresses": ["test@test.grr.la"],
             "template": ""
-        },
-        AllowedActions.SLACK.value: {
-            "hostname": "",
-            "path": ""
+        }
+    },
+    "BRIDGE": {
+        AllowedActions.EMAIL.value: {
+            "email-addresses": ["test@test.grr.la"],
+            "template": ""
         }
     }
 }
+NOTIFICATION_ARN = ""
+AWS_REGION = "us-east-1"

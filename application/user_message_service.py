@@ -1,18 +1,25 @@
-DEFAULT_SOURCE = "Anonymous"
+import json
 
 from config import RegisteredApplication, AllowedActions
 from constant import SendEmail
 from infrastructure.repositories.user_message_repo import UserMessageHistoryRepo
-from application.notification_service import SlackNotificationService, EmailNotificationService
+from templates.mail_templates import prepare_notification_email_message
+from common.logger import get_logger
+from common.boto_utils import BotoUtils
+from config import NOTIFICATION_ARN, AWS_REGION
 
 user_message_repo = UserMessageHistoryRepo()
+boto_utils = BotoUtils(region_name=AWS_REGION)
+logger = get_logger(__name__)
+DEFAULT_SOURCE = "Anonymous"
 
 
 class UserMessageService:
     def __init__(self):
         pass
 
-    def validate_message_and_message_type(self, message, message_type):
+    @staticmethod
+    def validate_message_and_message_type(message, message_type):
         if len(message) and len(message_type):
             return True
         raise Exception("Mandatory fields message and message type can't be none.")
@@ -38,7 +45,8 @@ class UserMessageService:
         if not UserMessageService.is_source_registered(source):
             return
         registered_actions = RegisteredApplication[source].keys()
-        message_details = {"subject": subject, "message": message}
+        message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
+                           "phone_no": phone_no, "subject": subject, "message": message}
         UserMessageService.process_actions(source, registered_actions, message_details)
         return
 
@@ -46,14 +54,18 @@ class UserMessageService:
     def process_actions(source, registered_actions, message_details):
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
-                email_details = {
-                    SendEmail.SUBJECT.value: message_details.get("subject", ""),
-                    SendEmail.CONTEXT.value: message_details.get("message", ""),
-                }
-                email_details = email_details.update(RegisteredApplication[source][action])
-                EmailNotificationService(email_details).send_notification()
-            if action == AllowedActions.SLACK.value:
-                slack_details = RegisteredApplication[source][action]
-                hostname, path, channel = slack_details["hostname"], slack_details["path"], slack_details["channel"]
-                SlackNotificationService(hostname, path, channel).send_notification(message_details.get("message", ""))
+                email_details = prepare_notification_email_message(message_details)
+                email_addresses = RegisteredApplication[source][action].get("email-addresses", [])
+                UserMessageService.send_emails(email_addresses, email_details)
         return
+
+    @staticmethod
+    def send_emails(email_addresses, payload):
+        for email_addresss in email_addresses:
+            payload.update({
+                "notification_type": "support",
+                "recipient": email_addresss})
+            payload = {"body": json.dumps(payload)}
+            boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_ARN, invocation_type="RequestResponse",
+                                     payload=json.dumps(payload))
+            logger.info(f"Mail sent to {email_addresss}")
