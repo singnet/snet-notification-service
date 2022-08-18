@@ -82,7 +82,7 @@ functions:
 
   send_notification_alert:
     handler: application/handler/alert_handlers.send_notification_alert
-    role: ${file(./config.json):ROLE}
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
     vpc:
       securityGroupIds:
         - ${file(./config.${self:provider.stage}.json):SG1}
