@@ -41,3 +41,34 @@ RegisteredApplication = {
 }
 NOTIFICATION_ARN = ""
 AWS_REGION = "us-east-1"
+
+ALERT_CONFIG = {
+  "rt-v2": {
+    "/aws/lambda/converterservices-rt-v2-": {
+      "default": {
+        "slack": [
+          {
+            "webhook_url": "",
+            "imageUrl": "https://d2adhoc2vrfpqj.cloudfront.net/2020/02/1zBSAFh5KIA72dmf1j9vfZQ.jpeg",
+            "buttonName": "Open Cloudwatch",
+            "buttonUrl": ""
+          }
+        ]
+      }
+    }
+  },
+  "mt-v2": {
+    "/aws/lambda/converterservices-mt-v2": {
+      "default": {
+        "slack": [
+          {
+            "webhook_url": "",
+            "imageUrl": "https://d2adhoc2vrfpqj.cloudfront.net/2020/02/1zBSAFh5KIA72dmf1j9vfZQ.jpeg",
+            "buttonName": "Open Cloudwatch",
+            "buttonUrl": ""
+          }
+        ]
+      }
+    }
+  }
+}
