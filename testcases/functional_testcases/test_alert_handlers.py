@@ -2,7 +2,7 @@ import json
 from unittest import TestCase, mock
 from unittest.mock import patch
 
-from application.handler.alert_handlers import send_notification_alert
+from application.handlers.alert_handlers import send_notification_alert
 
 
 class TestAlert(TestCase):
@@ -37,7 +37,7 @@ class TestAlert(TestCase):
         result = json.loads(response['body'])
         self.assertEqual(result, {'data': {'status': 'successful'}, 'error': '', 'status': 'success'})
 
-    @mock.patch('application.handler.alert_handlers.pause_notification', 'yes')
+    @mock.patch('application.handlers.alert_handlers.pause_notification', 'yes')
     def test_pause_notification_alert(self):
         event = {
             "awslogs": {

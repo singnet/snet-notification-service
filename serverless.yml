@@ -81,7 +81,7 @@ functions:
               - x-requested-with
 
   send_notification_alert:
-    handler: application/handler/alert_handlers.send_notification_alert
+    handler: application/handlers/alert_handlers.send_notification_alert
     role: ${file(./config.${self:provider.stage}.json):ROLE}
     vpc:
       securityGroupIds:
