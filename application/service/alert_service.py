@@ -15,7 +15,7 @@ from utils.exceptions import BadRequestException
 
 logger = get_logger(__name__)
 
-env = os.environ.get('ENVIRONMENT', "default")
+env = os.environ.get('ENVIRONMENT', "rt-v2")
 
 
 def read_config():
