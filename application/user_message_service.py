@@ -47,15 +47,23 @@ class UserMessageService:
         registered_actions = RegisteredApplication[source].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
                            "phone_no": phone_no, "subject": subject, "message": message}
-        UserMessageService.process_actions(source, registered_actions, message_details)
+        UserMessageService.process_actions(source, registered_actions, message_details, email)
         return
 
     @staticmethod
-    def process_actions(source, registered_actions, message_details):
+    def process_actions(source, registered_actions, message_details, email):
+        email_sent_user_address = False
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
                 email_details = prepare_notification_email_message(message_details)
                 email_addresses = RegisteredApplication[source][action].get("email-addresses", [])
+
+                # Adding user address to the email addresses list
+                if email and email_sent_user_address is False:
+                    email_addresses.append(email)
+                    email_sent_user_address = True
+
+                email_addresses = list(set(email_addresses))
                 UserMessageService.send_emails(email_addresses, email_details)
         return
 
