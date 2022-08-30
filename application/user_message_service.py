@@ -63,6 +63,7 @@ class UserMessageService:
                     email_addresses.append(email)
                     email_sent_user_address = True
 
+                email_addresses = list(set(email_addresses))
                 UserMessageService.send_emails(email_addresses, email_details)
         return
 
