@@ -6,11 +6,13 @@ def prepare_notification_email_message(data):
     email = data.get("email")
     subject = data.get("subject")
     message = data.get("message")
+    attachment_urls = data.get("attachment_urls")
 
     if not subject:
         subject = f"""{message_type} message from User"""
 
     return {
+        "attachment_urls": attachment_urls,
         "subject": f"""{subject}""",
         "message": f"""<div><p>{message}</p>
                             User Details<br/>
