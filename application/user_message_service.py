@@ -39,14 +39,17 @@ class UserMessageService:
         email = payload.get("email", "")
         phone_no = payload.get("phone_no", "")
         subject = payload.get("subject", "")
+        attachment_urls = payload.get("attachment_urls", [])
 
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
         if not UserMessageService.is_source_registered(source):
             return
+
         registered_actions = RegisteredApplication[source].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
-                           "phone_no": phone_no, "subject": subject, "message": message}
+                           "phone_no": phone_no, "subject": subject, "message": message,
+                           "attachment_urls": attachment_urls}
         UserMessageService.process_actions(source, registered_actions, message_details, email)
         return
 
