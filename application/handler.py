@@ -23,7 +23,7 @@ def process_user_message(event, context):
     logger.info(f"Send notification event:: {event}")
     payload = json.loads(event["body"])
     try:
-        response = UserMessageService().process_messages(payload)
+        response = UserMessageService.process_messages(payload)
     except Exception as e:
         print(repr(e))
         return generate_lambda_response(
