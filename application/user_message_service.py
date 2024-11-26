@@ -15,16 +15,6 @@ boto_utils = BotoUtils(region_name=AWS_REGION)
 logger = get_logger(__name__)
 
 
-class SOURCES(Enum):
-    PUBLISHER_PORTAL = 1
-    BRIDGE = 2
-    STAKING = 3
-    CONVERTER_SERVICE = 4
-    TOKEN_TRANSFER = 5
-    LOYALTY_AIRDROP = 6
-    DEVELOPER_PORTAL = 7
-
-
 class UserMessageService:
     def __init__(self):
         pass
