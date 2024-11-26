@@ -33,16 +33,16 @@ class UserMessageService:
     def validate_mandatory_fields(payload, fields: list[str]):
         empty_fields = []
         for field in fields:
-            if not payload.get(field, None):
+            if not payload.get(field):
                 empty_fields.append(field)
         if empty_fields:
-            raise Exception(f"Mandatory fields {', '.join(empty_fields)} can't be none.")
+            raise Exception(f"Mandatory fields {', '.join(empty_fields)} can't be empty.")
 
     @staticmethod
     def validate_source(source):
         if not source:
-            raise Exception("Mandatory field source can't be none.")
-        elif source not in SOURCES.__members__.keys():
+            raise Exception("Mandatory field source can't be empty.")
+        elif source not in RegisteredApplication.keys():
             raise Exception("Invalid source field")
 
     @classmethod
@@ -60,9 +60,9 @@ class UserMessageService:
         cls.validate_source(source)
 
         fields_to_check = ["email", "message", "message_type"]
-        if source == SOURCES.DEVELOPER_PORTAL.name:
+        if source == "DEVELOPER_PORTAL":
             fields_to_check += ["name"]
-        elif source == SOURCES.BRIDGE.name:
+        elif source == "BRIDGE":
             fields_to_check += ["address"]
         cls.validate_mandatory_fields(payload, fields_to_check)
 
@@ -70,13 +70,13 @@ class UserMessageService:
         if not re.match(pattern, email):
             raise Exception("Invalid email")
 
-        if not message_type.lower() in ['question', 'bug', 'feedback']:
+        if source in ["BRIDGE", "DEVELOPER_PORTAL"] and not message_type.lower() in ['question', 'bug', 'feedback']:
             raise Exception("Invalid message_type")
 
         pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"
         pattern_cardano = r"^(addr1[a-z0-9]{98})$"
 
-        if (source == SOURCES.BRIDGE.name
+        if (source == "BRIDGE"
                 and not re.match(pattern_cardano, address)
                 and not re.match(pattern_ethereum, address)):
             raise Exception("Invalid address")
