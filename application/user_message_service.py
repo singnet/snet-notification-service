@@ -20,7 +20,7 @@ class UserMessageService:
         pass
 
     @staticmethod
-    def validate_mandatory_fields(payload, fields: list[str]):
+    def validate_mandatory_fields(payload, fields):
         empty_fields = []
         for field in fields:
             if not payload.get(field):
