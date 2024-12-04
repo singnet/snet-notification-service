@@ -1,4 +1,6 @@
 import json
+from enum import Enum
+import re
 
 from config import RegisteredApplication, AllowedActions
 from constant import SendEmail
@@ -11,7 +13,6 @@ from config import NOTIFICATION_ARN, AWS_REGION
 user_message_repo = UserMessageHistoryRepo()
 boto_utils = BotoUtils(region_name=AWS_REGION)
 logger = get_logger(__name__)
-DEFAULT_SOURCE = "Anonymous"
 
 
 class UserMessageService:
@@ -19,21 +20,26 @@ class UserMessageService:
         pass
 
     @staticmethod
-    def validate_message_and_message_type(message, message_type):
-        if len(message) and len(message_type):
-            return True
-        raise Exception("Mandatory fields message and message type can't be none.")
+    def validate_mandatory_fields(payload, fields):
+        empty_fields = []
+        for field in fields:
+            if not payload.get(field):
+                empty_fields.append(field)
+        if empty_fields:
+            raise Exception(f"Mandatory fields {', '.join(empty_fields)} can't be empty.")
 
     @staticmethod
-    def is_source_registered(source):
-        if source in RegisteredApplication.keys():
-            return True
-        return False
+    def validate_source(source):
+        if not source:
+            raise Exception("Mandatory field source can't be empty.")
+        elif source not in RegisteredApplication.keys():
+            raise Exception("Invalid source field")
 
-    def process_messages(self, payload):
+    @classmethod
+    def process_messages(cls, payload):
         message = payload.get("message", "")
         message_type = payload.get("message_type", "")
-        source = payload.get("source", DEFAULT_SOURCE)
+        source = payload.get("source", "")
         name = payload.get("name", "")
         address = payload.get("address", "")
         email = payload.get("email", "")
@@ -41,16 +47,37 @@ class UserMessageService:
         subject = payload.get("subject", "")
         attachment_urls = payload.get("attachment_urls", [])
 
-        user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
+        cls.validate_source(source)
 
-        if not UserMessageService.is_source_registered(source):
-            return
+        fields_to_check = ["email", "message", "message_type"]
+        if source == "DEVELOPER_PORTAL":
+            fields_to_check += ["name"]
+        elif source == "BRIDGE":
+            fields_to_check += ["address"]
+        cls.validate_mandatory_fields(payload, fields_to_check)
+
+        pattern = r"^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\\\".+\\\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$"
+        if not re.match(pattern, email):
+            raise Exception("Invalid email")
+
+        if source in ["BRIDGE", "DEVELOPER_PORTAL"] and not message_type.lower() in ['question', 'bug', 'feedback']:
+            raise Exception("Invalid message_type")
+
+        pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"
+        pattern_cardano = r"^(addr1[a-z0-9]{98})$"
+
+        if (source == "BRIDGE"
+                and not re.match(pattern_cardano, address)
+                and not re.match(pattern_ethereum, address)):
+            raise Exception("Invalid address")
+
+        user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
         registered_actions = RegisteredApplication[source].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
                            "phone_no": phone_no, "subject": subject, "message": message,
                            "attachment_urls": attachment_urls}
-        UserMessageService.process_actions(source, registered_actions, message_details, email)
+        cls.process_actions(source, registered_actions, message_details, email)
         return
 
     @staticmethod
