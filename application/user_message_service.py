@@ -75,8 +75,11 @@ class UserMessageService:
         if any(not isinstance(x, str) for x in details.values()):
             raise Exception("Values in details should be strings")
 
-        if source == "UI_CONSTRUCTOR" and len(set(details.keys()) - {"org_id", "service_id", "endpoint"}) > 0:
-            raise Exception("Details for UI_CONSTRUCTOR must contain only org_id, service_id and endpoint")
+        if source == "UI_CONSTRUCTOR":
+            redundant_details = set(details.keys()) - {["org_id", "service_id", "endpoint"]}
+            if len(redundant_details) > 0:
+                for key in redundant_details:
+                    del details[key]
 
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
