@@ -34,5 +34,5 @@ def prepare_notification_email_message(data):
 
 
 def prepare_details_record(key, value):
-    key = key[0].upper() + key[1:]
+    key = key.capitalize()
     return f"{key}: {value}"
