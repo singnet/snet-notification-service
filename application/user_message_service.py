@@ -46,6 +46,7 @@ class UserMessageService:
         phone_no = payload.get("phone_no", "")
         subject = payload.get("subject", "")
         attachment_urls = payload.get("attachment_urls", [])
+        details = payload.get("details", {})
 
         cls.validate_source(source)
 
@@ -71,12 +72,18 @@ class UserMessageService:
                 and not re.match(pattern_ethereum, address)):
             raise Exception("Invalid address")
 
+        if any(not isinstance(x, str) for x in details.values()):
+            raise Exception("Values in details should be strings")
+
+        if source == "UI_CONSTRUCTOR" and len(set(details.keys()) - {"org_id", "service_id", "endpoint"}) > 0:
+            raise Exception("Details for UI_CONSTRUCTOR must contain only org_id, service_id and endpoint")
+
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
         registered_actions = RegisteredApplication[source].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
                            "phone_no": phone_no, "subject": subject, "message": message,
-                           "attachment_urls": attachment_urls}
+                           "attachment_urls": attachment_urls, "details": details}
         cls.process_actions(source, registered_actions, message_details, email)
         return
 
