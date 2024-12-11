@@ -76,7 +76,7 @@ class UserMessageService:
             raise Exception("Values in details should be strings")
 
         if source == "UI_CONSTRUCTOR":
-            for key in set(details.keys()) - {["org_id", "service_id", "endpoint"]}:
+            for key in set(details.keys()) - {"org_id", "service_id", "endpoint"}:
                 del details[key]
 
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
