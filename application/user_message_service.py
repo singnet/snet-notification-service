@@ -103,6 +103,6 @@ class UserMessageService:
         for email_addresss in email_addresses:
             email_details.update({"recipient": email_addresss})
             payload = {"body": json.dumps(email_details)}
-            boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_ARN, invocation_type="RequestResponse",
+            boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_ARN, invocation_type="Event",
                                      payload=json.dumps(payload))
             logger.info(f"Mail sent to {email_addresss}")
