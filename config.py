@@ -85,6 +85,3 @@ ALERT_CONFIG = {
         }
     }
 }
-
-RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
-RECAPTCHA_SECRET_KEY = ""
