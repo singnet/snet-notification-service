@@ -1,11 +1,14 @@
+service: notification-service
+frameworkVersion: '3'
+
 plugins:
   - serverless-python-requirements
   - serverless-prune-plugin
+  - serverless-offline
 
-service: notification-service
 provider:
   name: aws
-  runtime: python3.7
+  runtime: python3.11
   memorySize: 512
   timeout: 30
   region: ${file(./config.${self:provider.stage}.json):REGION}
