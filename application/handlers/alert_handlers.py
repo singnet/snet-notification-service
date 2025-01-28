@@ -16,8 +16,8 @@ pause_notification = os.environ.get('PAUSE_NOTIFICATION', "no")
 def send_notification_alert(event, context):
     logger.info("Started alerting for the request")
     payload = convert_cw_to_event_format(event)
+    logger.info(f"Event={json.dumps(payload)}")
     if pause_notification.lower() == "yes":
-        logger.info(f"Event={json.dumps(payload)}")
         return generate_lambda_response(HTTPStatus.OK.value,
                                         make_response_body("failed", {"status": "Not processing"}, ""))
 

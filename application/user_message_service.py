@@ -1,14 +1,12 @@
 import json
-from enum import Enum
 import re
 
-from config import RegisteredApplication, AllowedActions
-from constant import SendEmail
+from common.boto_utils import BotoUtils
+from common.logger import get_logger
+from config import (AWS_REGION, NOTIFICATION_ARN,
+                    RegisteredApplication, AllowedActions)
 from infrastructure.repositories.user_message_repo import UserMessageHistoryRepo
 from templates.mail_templates import prepare_notification_email_message
-from common.logger import get_logger
-from common.boto_utils import BotoUtils
-from config import NOTIFICATION_ARN, AWS_REGION
 
 user_message_repo = UserMessageHistoryRepo()
 boto_utils = BotoUtils(region_name=AWS_REGION)

@@ -46,7 +46,14 @@ RegisteredApplication = {
     }
 }
 NOTIFICATION_ARN = ""
+NOTIFICATION_LAMBDA = "send_email"
 AWS_REGION = "us-east-1"
+
+EMAIL_FOR_SENDING_NOTIFICATION = ""
+S3_DOWNLOAD_API = {
+    "HOST": "",
+    "TOKEN": ""
+}
 
 ALERT_CONFIG = {
     "rt-v2": {
@@ -78,3 +85,6 @@ ALERT_CONFIG = {
         }
     }
 }
+
+RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
+RECAPTCHA_SECRET_KEY = ""
