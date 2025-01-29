@@ -1,5 +1,4 @@
 service: notification-service
-frameworkVersion: '3'
 
 plugins:
   - serverless-python-requirements
