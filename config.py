@@ -46,7 +46,6 @@ RegisteredApplication = {
     }
 }
 NOTIFICATION_ARN = ""
-NOTIFICATION_LAMBDA = "send_email"
 AWS_REGION = "us-east-1"
 
 EMAIL_FOR_SENDING_NOTIFICATION = ""

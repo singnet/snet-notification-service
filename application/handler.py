@@ -15,7 +15,7 @@ SENDERS = {
 }
 
 
-def send_notification(event, context):
+def send_notification(event: dict, context):
     logger.info(f"Send notification event:: {event}")
     payload = json.loads(event["body"])
     try:
@@ -26,7 +26,7 @@ def send_notification(event, context):
     return {"status": response}
 
 
-def process_user_message(event, context):
+def process_user_message(event: dict, context):
     logger.info(f"Send notification event:: {event}")
     payload = json.loads(event["body"])
     try:
@@ -44,9 +44,10 @@ def process_user_message(event, context):
     )
 
 
-def send_email(event, context):
+def send_email(event: dict, context):
     logger.info(f"Send email event:: {event}")
-    payload = json.loads(event["body"], "{}")
+    body = event.get("body", "{}")
+    payload = json.loads(body)
     headers = {
         "Access-Control-Allow-Headers": "Access-Control-Allow-Origin,"
                                         "Content-Type, X-Amz-Date,"

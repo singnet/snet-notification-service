@@ -1,12 +1,15 @@
 import json
+import os
 import re
 
 from common.boto_utils import BotoUtils
 from common.logger import get_logger
-from config import (AWS_REGION, NOTIFICATION_LAMBDA,
-                    RegisteredApplication, AllowedActions)
+from config import AWS_REGION, RegisteredApplication, AllowedActions
 from infrastructure.repositories.user_message_repo import UserMessageHistoryRepo
 from templates.mail_templates import prepare_notification_email_message
+
+SERVICE = os.getenv("SERVICE")
+STAGE = os.getenv("STAGE")
 
 user_message_repo = UserMessageHistoryRepo()
 boto_utils = BotoUtils(region_name=AWS_REGION)
@@ -109,6 +112,8 @@ class UserMessageService:
         for email_addresss in email_addresses:
             email_details.update({"recipient": email_addresss})
             payload = {"body": json.dumps(email_details)}
-            boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_LAMBDA, invocation_type="Event",
+            if not SERVICE or not STAGE:
+                raise Exception("Service or Stage are missing")
+            boto_utils.invoke_lambda(lambda_function_arn=f"{SERVICE}-{STAGE}-send_email", invocation_type="Event",
                                      payload=json.dumps(payload))
             logger.info(f"Mail sent to {email_addresss}")
