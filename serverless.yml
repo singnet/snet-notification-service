@@ -8,7 +8,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: python3.11
+  runtime: python3.12
   memorySize: 512
   timeout: 30
   region: ${file(./config.${self:provider.stage}.json):REGION}
