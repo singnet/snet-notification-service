@@ -19,7 +19,6 @@ provider:
       key1: notification
       key2: email
   deploymentPrefix: serverless
-  tracing: true
   environment:
     SERVICE: ${self:service}
     STAGE: ${self:provider.stage}

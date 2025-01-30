@@ -52,7 +52,7 @@ class UserMessageService:
         cls.validate_source(source)
 
         fields_to_check = ["email", "message", "message_type"]
-        if source == "DEVELOPER_PORTAL":
+        if source in ["DEVELOPER_PORTAL", "MARKETPLACE"]:
             fields_to_check += ["name"]
         elif source == "BRIDGE":
             fields_to_check += ["address"]
@@ -62,7 +62,8 @@ class UserMessageService:
         if not re.match(pattern, email):
             raise Exception("Invalid email")
 
-        if source in ["BRIDGE", "DEVELOPER_PORTAL"] and not message_type.lower() in ['question', 'bug', 'feedback']:
+        if (source in ["BRIDGE", "DEVELOPER_PORTAL", "UI_CONSTRUCTOR", "MARKETPLACE"]
+            and not message_type.lower() in ['question', 'bug', 'feedback']):
             raise Exception("Invalid message_type")
 
         pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"

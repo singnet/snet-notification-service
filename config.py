@@ -45,7 +45,7 @@ RegisteredApplication = {
         }
     }
 }
-NOTIFICATION_ARN = ""
+
 AWS_REGION = "us-east-1"
 
 EMAIL_FOR_SENDING_NOTIFICATION = ""
