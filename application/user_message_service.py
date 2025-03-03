@@ -96,7 +96,7 @@ class UserMessageService:
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
                 email_details = prepare_notification_email_message(message_details)
-                email_addresses = RegisteredApplication[source][action].get("email-addresses", [])
+                email_addresses = list(RegisteredApplication[source][action].get("email-addresses", []))
 
                 # Adding user address to the email addresses list
                 if email and email_sent_user_address is False:
