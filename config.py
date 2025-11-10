@@ -45,8 +45,14 @@ RegisteredApplication = {
         }
     }
 }
-NOTIFICATION_ARN = ""
+
 AWS_REGION = "us-east-1"
+
+EMAIL_FOR_SENDING_NOTIFICATION = ""
+S3_DOWNLOAD_API = {
+    "HOST": "",
+    "TOKEN": ""
+}
 
 ALERT_CONFIG = {
     "rt-v2": {

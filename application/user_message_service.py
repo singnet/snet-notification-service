@@ -1,14 +1,15 @@
 import json
-from enum import Enum
+import os
 import re
 
-from config import RegisteredApplication, AllowedActions
-from constant import SendEmail
+from common.boto_utils import BotoUtils
+from common.logger import get_logger
+from config import AWS_REGION, RegisteredApplication, AllowedActions
 from infrastructure.repositories.user_message_repo import UserMessageHistoryRepo
 from templates.mail_templates import prepare_notification_email_message
-from common.logger import get_logger
-from common.boto_utils import BotoUtils
-from config import NOTIFICATION_ARN, AWS_REGION
+
+SERVICE = os.getenv("SERVICE")
+STAGE = os.getenv("STAGE")
 
 user_message_repo = UserMessageHistoryRepo()
 boto_utils = BotoUtils(region_name=AWS_REGION)
@@ -51,7 +52,7 @@ class UserMessageService:
         cls.validate_source(source)
 
         fields_to_check = ["email", "message", "message_type"]
-        if source == "DEVELOPER_PORTAL":
+        if source in ["DEVELOPER_PORTAL", "MARKETPLACE", "ASI_CHAIN_DOCS"]:
             fields_to_check += ["name"]
         elif source == "BRIDGE":
             fields_to_check += ["address"]
@@ -61,7 +62,8 @@ class UserMessageService:
         if not re.match(pattern, email):
             raise Exception("Invalid email")
 
-        if source in ["BRIDGE", "DEVELOPER_PORTAL"] and not message_type.lower() in ['question', 'bug', 'feedback']:
+        if (source in ["BRIDGE", "DEVELOPER_PORTAL", "UI_CONSTRUCTOR", "MARKETPLACE", "ASI_CHAIN_DOCS"]
+            and not message_type.lower() in ['question', 'bug', 'feedback']):
             raise Exception("Invalid message_type")
 
         pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"
@@ -94,7 +96,7 @@ class UserMessageService:
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
                 email_details = prepare_notification_email_message(message_details)
-                email_addresses = RegisteredApplication[source][action].get("email-addresses", [])
+                email_addresses = list(RegisteredApplication[source][action].get("email-addresses", []))
 
                 # Adding user address to the email addresses list
                 if email and email_sent_user_address is False:
@@ -111,6 +113,8 @@ class UserMessageService:
         for email_addresss in email_addresses:
             email_details.update({"recipient": email_addresss})
             payload = {"body": json.dumps(email_details)}
-            boto_utils.invoke_lambda(lambda_function_arn=NOTIFICATION_ARN, invocation_type="Event",
+            if not SERVICE or not STAGE:
+                raise Exception("Service or Stage are missing")
+            boto_utils.invoke_lambda(lambda_function_arn=f"{SERVICE}-{STAGE}-send_email", invocation_type="Event",
                                      payload=json.dumps(payload))
             logger.info(f"Mail sent to {email_addresss}")

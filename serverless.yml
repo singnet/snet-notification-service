@@ -1,11 +1,13 @@
+service: notification-service
+
 plugins:
   - serverless-python-requirements
   - serverless-prune-plugin
+  - serverless-offline
 
-service: notification-service
 provider:
   name: aws
-  runtime: python3.7
+  runtime: python3.12
   memorySize: 512
   timeout: 30
   region: ${file(./config.${self:provider.stage}.json):REGION}
@@ -17,7 +19,9 @@ provider:
       key1: notification
       key2: email
   deploymentPrefix: serverless
-  tracing: true
+  environment:
+    SERVICE: ${self:service}
+    STAGE: ${self:provider.stage}
 
 custom:
   pythonRequirements:
@@ -94,3 +98,28 @@ functions:
     environment:
       ENVIRONMENT: ${file(./config.${self:provider.stage}.json):ENVIRONMENT}
       PAUSE_NOTIFICATION: ${file(./config.${self:provider.stage}.json):PAUSE_NOTIFICATION}
+
+  send_email:
+    handler: application/handler.send_email
+    role: ${file(./config.${self:provider.stage}.json):ROLE}
+    vpc:
+      securityGroupIds:
+        - ${file(./config.${self:provider.stage}.json):SG1}
+        - ${file(./config.${self:provider.stage}.json):SG2}
+      subnetIds:
+        - ${file(./config.${self:provider.stage}.json):VPC1}
+        - ${file(./config.${self:provider.stage}.json):VPC2}
+    events:
+      - http:
+          method: POST
+          path: /email
+          cors:
+            origin: ${file(./config.${self:provider.stage}.json):ORIGIN}
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - x-requested-with
