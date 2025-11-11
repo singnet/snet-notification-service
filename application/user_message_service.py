@@ -52,7 +52,7 @@ class UserMessageService:
         cls.validate_source(source)
 
         fields_to_check = ["email", "message", "message_type"]
-        if source in ["DEVELOPER_PORTAL", "MARKETPLACE", "ASI_CHAIN_DOCS"]:
+        if source in ["DEVELOPER_PORTAL", "MARKETPLACE", "ASI_CHAIN_DOCS", "ASI_CHAIN_EXPLORER", "ASI_CHAIN_FAUCET", "ASI_CHAIN_WALLET"]:
             fields_to_check += ["name"]
         elif source == "BRIDGE":
             fields_to_check += ["address"]
@@ -62,7 +62,7 @@ class UserMessageService:
         if not re.match(pattern, email):
             raise Exception("Invalid email")
 
-        if (source in ["BRIDGE", "DEVELOPER_PORTAL", "UI_CONSTRUCTOR", "MARKETPLACE", "ASI_CHAIN_DOCS"]
+        if (source in ["BRIDGE", "DEVELOPER_PORTAL", "UI_CONSTRUCTOR", "MARKETPLACE", "ASI_CHAIN_DOCS", "ASI_CHAIN_EXPLORER", "ASI_CHAIN_FAUCET", "ASI_CHAIN_WALLET"]
             and not message_type.lower() in ['question', 'bug', 'feedback']):
             raise Exception("Invalid message_type")
 
