@@ -46,13 +46,14 @@ class UserMessageService:
         email = payload.get("email", "")
         phone_no = payload.get("phone_no", "")
         subject = payload.get("subject", "")
+        priority = payload.get("priority", "")
         attachment_urls = payload.get("attachment_urls", [])
         details = payload.get("details", {})
 
         cls.validate_source(source)
 
         fields_to_check = ["email", "message", "message_type"]
-        if source in ["DEVELOPER_PORTAL", "MARKETPLACE", "ASI_CHAIN_DOCS", "ASI_CHAIN_EXPLORER", "ASI_CHAIN_FAUCET", "ASI_CHAIN_WALLET"]:
+        if source in ["DEVELOPER_PORTAL", "MARKETPLACE", "ASI_CHAIN_DOCS", "ASI_CHAIN_EXPLORER", "ASI_CHAIN_FAUCET", "ASI_CHAIN_WALLET", "ASI_CREATE"]:
             fields_to_check += ["name"]
         elif source == "BRIDGE":
             fields_to_check += ["address"]
@@ -65,6 +66,12 @@ class UserMessageService:
         if (source in ["BRIDGE", "DEVELOPER_PORTAL", "UI_CONSTRUCTOR", "MARKETPLACE", "ASI_CHAIN_DOCS", "ASI_CHAIN_EXPLORER", "ASI_CHAIN_FAUCET", "ASI_CHAIN_WALLET"]
             and not message_type.lower() in ['question', 'bug', 'feedback']):
             raise Exception("Invalid message_type")
+
+        if source in ["ASI_CREATE"]:
+            if not message_type.lower() in ['question', 'bug', 'feedback', 'feature']:
+                raise Exception("Invalid message_type")
+            # if not priority.lower() in ['low', 'middle', 'high']:
+            #     raise Exception("Invalid priority")
 
         pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"
         pattern_cardano = r"^(addr1[a-z0-9]{98})$"
