@@ -70,8 +70,8 @@ class UserMessageService:
         if source in ["ASI_CREATE"]:
             if not message_type.lower() in ['question', 'bug', 'feedback', 'feature']:
                 raise Exception("Invalid message_type")
-            if not priority.lower() in ['low', 'middle', 'high']:
-                raise Exception("Invalid priority")
+            # if not priority.lower() in ['low', 'middle', 'high']:
+            #     raise Exception("Invalid priority")
 
         pattern_ethereum = r"^(0x[a-fA-F0-9]{40})$"
         pattern_cardano = r"^(addr1[a-z0-9]{98})$"
