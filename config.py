@@ -25,30 +25,49 @@ class AllowedActions(Enum):
     SLACK = "SLACK"
 
 
+class NotificationType(Enum):
+    support = "support"
+
+
 RegisteredApplication = {
     "PUBLISHER_PORTAL": {
-        AllowedActions.EMAIL.value: {
-            "email-addresses": ["test@test.grr.la"],
-            "template": ""
+        "senders": {
+            NotificationType.support.value: ""
+        },
+        "receivers": {
+            AllowedActions.EMAIL.value: {
+                "email-addresses": ["test@test.grr.la"],
+                "template": ""
+            }
         }
     },
     "BRIDGE": {
-        AllowedActions.EMAIL.value: {
-            "email-addresses": ["test@test.grr.la"],
-            "template": ""
+        "senders": {
+            NotificationType.support.value: ""
+        },
+        "receivers": {
+            AllowedActions.EMAIL.value: {
+                "email-addresses": ["test@test.grr.la"],
+                "template": ""
+            }
         }
     },
     "TOKEN_TRANSFER": {
-        AllowedActions.EMAIL.value: {
-            "email-addresses": ["test@test.grr.la"],
-            "template": ""
+        "senders": {
+            NotificationType.support.value: ""
+        },
+        "receivers": {
+            AllowedActions.EMAIL.value: {
+                "email-addresses": ["test@test.grr.la"],
+                "template": ""
+            }
         }
     }
 }
 
 AWS_REGION = "us-east-1"
 
-EMAIL_FOR_SENDING_NOTIFICATION = ""
+EMAIL_FOR_SENDING_NOTIFICATION_DEPRECATED_VERSION = ""
 S3_DOWNLOAD_API = {
     "HOST": "",
     "TOKEN": ""
@@ -84,3 +103,5 @@ ALERT_CONFIG = {
         }
     }
 }
+
+MATTERMOST_ALERT_URL = "https://chat.singularitynet.io/hooks"

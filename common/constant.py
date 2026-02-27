@@ -1,4 +1,4 @@
-from enum import Enum
+from config import NotificationType
 
 
 class StatusCode:
@@ -11,10 +11,6 @@ class StatusCode:
 class ResponseStatus:
     FAILED = "failed"
     SUCCESS = "success"
-
-
-class NotificationType(Enum):
-    SUPPORT = "support"
 
 
 BODY_HTMLS = {NotificationType.SUPPORT.value: """<html>
