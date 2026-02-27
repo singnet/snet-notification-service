@@ -90,7 +90,7 @@ class UserMessageService:
 
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
-        registered_actions = RegisteredApplication["receivers"][source].keys()
+        registered_actions = RegisteredApplication[source]["receivers"].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
                            "phone_no": phone_no, "subject": subject, "message": message,
                            "attachment_urls": attachment_urls, "details": details}
@@ -102,8 +102,10 @@ class UserMessageService:
         email_sent_user_address = False
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
+                subscription_template = RegisteredApplication[source]["senders"]["subscription_template"]
+                message_details["subscription_template"] = subscription_template
                 email_details = prepare_notification_email_message(message_details)
-                email_addresses = list(RegisteredApplication["receivers"][source][action].get("email-addresses", []))
+                email_addresses = list(RegisteredApplication[source]["receivers"][action].get("email-addresses", []))
 
                 # Adding user address to the email addresses list
                 if email and email_sent_user_address is False:
