@@ -4,7 +4,7 @@ import re
 
 from common.boto_utils import BotoUtils
 from common.logger import get_logger
-from config import AWS_REGION, RegisteredApplication, AllowedActions
+from config import AWS_REGION, NotificationType, RegisteredApplication, AllowedActions
 from infrastructure.repositories.user_message_repo import UserMessageHistoryRepo
 from templates.mail_templates import prepare_notification_email_message
 
@@ -90,7 +90,7 @@ class UserMessageService:
 
         user_message_repo.add_message(source, name, address, email, phone_no, message_type, subject, message)
 
-        registered_actions = RegisteredApplication[source].keys()
+        registered_actions = RegisteredApplication[source]["receivers"].keys()
         message_details = {"message_type": message_type, "name": name, "address": address, "email": email,
                            "phone_no": phone_no, "subject": subject, "message": message,
                            "attachment_urls": attachment_urls, "details": details}
@@ -102,8 +102,10 @@ class UserMessageService:
         email_sent_user_address = False
         for action in registered_actions:
             if action == AllowedActions.EMAIL.value:
+                subscription_template = RegisteredApplication[source]["senders"]["subscription_template"]
+                message_details["subscription_template"] = subscription_template
                 email_details = prepare_notification_email_message(message_details)
-                email_addresses = list(RegisteredApplication[source][action].get("email-addresses", []))
+                email_addresses = list(RegisteredApplication[source]["receivers"][action].get("email-addresses", []))
 
                 # Adding user address to the email addresses list
                 if email and email_sent_user_address is False:
@@ -111,12 +113,17 @@ class UserMessageService:
                     email_sent_user_address = True
 
                 email_addresses = list(set(email_addresses))
-                UserMessageService.send_emails(email_addresses, email_details)
+                UserMessageService.send_emails(source, email_addresses, email_details)
         return
 
     @staticmethod
-    def send_emails(email_addresses, email_details):
-        email_details.update({"notification_type": "support"})
+    def send_emails(source, email_addresses, email_details):
+        email_details.update(
+            {
+                "source": source,
+                "notification_type": NotificationType.support.value
+            }
+        )
         for email_addresss in email_addresses:
             email_details.update({"recipient": email_addresss})
             payload = {"body": json.dumps(email_details)}

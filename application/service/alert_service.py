@@ -3,12 +3,14 @@ import gzip
 import json
 import os
 from datetime import datetime
+from functools import wraps
 from http import HTTPStatus
+from typing import Optional
 
 import requests
 
 from common.logger import get_logger
-from config import ALERT_CONFIG
+from config import ALERT_CONFIG, MATTERMOST_ALERT_URL
 from constant import NotificationAlert
 from utils.date import datetime_to_str
 from utils.exceptions import BadRequestException
@@ -159,3 +161,32 @@ def get_slack_format(log_group, log_stream, error_time, error_message, image_url
             }
         ]
     }
+
+
+def delivery_exception_handler(method):
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        try:
+            self.health_check()
+            return method(self, *args, **kwargs)
+        except AssertionError as e:
+            logger.warning(f"Failed to send alert ({e})", exc_info=False)
+        except Exception as e:
+            logger.warning(f"Failed to send alert ({repr(e)})", exc_info=True)
+
+    return wrapper
+
+
+class MattermostProcessor:
+    def __init__(self, url: Optional[str]):
+        self.url = url if url else MATTERMOST_ALERT_URL
+
+    def health_check(self):
+        assert self.url and isinstance(self.url, str), "Bad mattermost url value"
+
+    @delivery_exception_handler
+    def send(self, message: str):
+        headers = {"Content-Type": "application/json"}
+        payload = {"text": message}
+        response = requests.post(self.url, headers=headers, data=json.dumps(payload))
+        logger.info(f"Mattermost response [code {response.status_code}]: {response.text}")

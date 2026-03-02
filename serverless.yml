@@ -83,6 +83,7 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+              - x-aws-waf-token
 
   send_notification_alert:
     handler: application/handlers/alert_handlers.send_notification_alert
@@ -123,3 +124,4 @@ functions:
               - X-Amz-Security-Token
               - X-Amz-User-Agent
               - x-requested-with
+              - x-aws-waf-token

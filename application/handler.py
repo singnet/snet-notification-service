@@ -1,18 +1,15 @@
 import json
 
 from application.notification_service import EmailNotificationService
+from application.service.alert_service import MattermostProcessor
 from application.service.email_service import send_email_with_attachment
 from application.user_message_service import UserMessageService
-from common.constant import BODY_HTMLS, NotificationType, StatusCode
+from common.constant import BODY_HTMLS, StatusCode
 from common.logger import get_logger
 from common.utils import generate_lambda_response
-from config import EMAIL_FOR_SENDING_NOTIFICATION
+from config import EMAIL_FOR_SENDING_NOTIFICATION_DEPRECATED_VERSION, RegisteredApplication
 
 logger = get_logger(__name__)
-
-SENDERS = {
-    NotificationType.SUPPORT.value: EMAIL_FOR_SENDING_NOTIFICATION
-}
 
 
 def send_notification(event: dict, context):
@@ -71,7 +68,19 @@ def send_email(event: dict, context):
         notification_type = (payload["notification_type"]
                              if "notification_type" in payload else "")
         body_html = BODY_HTMLS[notification_type].format(message)
-        sender = SENDERS[notification_type]
+        source = payload.get("source")
+        if source:
+            # New version with source param in payload
+            sender = RegisteredApplication[source]["senders"][notification_type]
+        else:
+            # Old version without source param for unknown services
+            sender = EMAIL_FOR_SENDING_NOTIFICATION_DEPRECATED_VERSION
+
+            # send message to MM to info
+            alert_processor = MattermostProcessor()
+            alert_processor.send(message="### :warning: Received a request to send an email "
+                                         f"for a deprecated version.\nEvent: {event}\n")
+
         send_email_with_attachment(recipient, subject,
                                    body_html, sender,
                                    attachment_urls=attachment_urls)
