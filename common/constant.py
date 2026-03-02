@@ -13,7 +13,7 @@ class ResponseStatus:
     SUCCESS = "success"
 
 
-BODY_HTMLS = {NotificationType.SUPPORT.value: """<html>
+BODY_HTMLS = {NotificationType.support.value: """<html>
 <head></head>
 <body>
   <p>{}</p>
